@@ -1,23 +1,25 @@
-import logo from './logo.svg';
-import './App.css';
+const width = 8;
 
-function App() {
+const candyColors = [
+  'blue',
+  'green',
+  'orange',
+  'purple',
+  'red',
+  'yellow'
+];
+
+
+
+const App = () => {
+
+  const createBoard = () => {
+
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      This is a page
     </div>
   );
 }
