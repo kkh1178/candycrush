@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+
+import ScoreBoard from './component/ScoreBoard';
 import blueCandy from "./images/blue-candy.png"
 import greenCandy from "./images/green-candy.png"
 import orangeCandy from "./images/orange-candy.png"
@@ -17,11 +19,11 @@ const candyColors = [
   yellowCandy
 ];
 
-
 const App = () => {
   const [currentColorArrangement, setCurrentColorArrangement] = useState([]);
   const [draggedSquare, setDraggedSquare] = useState(null)
   const [replacedSquare, setReplacedSquare] = useState(null)
+  const [scoreDisplay, setScoreDisplay] = useState(0);
 
   const threeInColumnCheck = () => {
     /*
@@ -34,8 +36,10 @@ const App = () => {
     for (let i = 0; i < lastTwoRows; i++) {
       const columnOfThree = [i, i + width, i + (width * 2)]
       const constantColor = currentColorArrangement[i]
+      const blankSquare = currentColorArrangement[i] === blank
 
-      if (columnOfThree.every(square => currentColorArrangement[square] === constantColor)) {
+      if (columnOfThree.every(square => currentColorArrangement[square] === constantColor && !blankSquare)) {
+        setScoreDisplay((score) => score + 3)
         columnOfThree.forEach(square => currentColorArrangement[square] = blank)
         return true
       }
@@ -57,11 +61,13 @@ const App = () => {
     for (let i = 0; i < width * width; i++) {
       const rowOfThree = [i, i + 1, i + 2]
       const constantColor = currentColorArrangement[i]
+      const blankSquare = currentColorArrangement[i] === blank
       if ((i + 2) % width === 0 || (i + 1) % width === 0) {
         continue
       } else {
-        if (rowOfThree.every(square => currentColorArrangement[square] === constantColor)) {
+        if (rowOfThree.every(square => currentColorArrangement[square] === constantColor && !blankSquare)) {
           rowOfThree.forEach(square => currentColorArrangement[square] = blank)
+          setScoreDisplay((score) => score + 3)
           return true
         }
       }
@@ -74,9 +80,11 @@ const App = () => {
     for (let i = 0; i < lastThreeRows; i++) {
       const columnOfFour = [i, i + width, i + (width * 2), i + (width * 3)]
       const constantColor = currentColorArrangement[i]
+      const blankSquare = currentColorArrangement[i] === blank
 
-      if (columnOfFour.every(square => currentColorArrangement[square] === constantColor)) {
+      if (columnOfFour.every(square => currentColorArrangement[square] === constantColor && !blankSquare)) {
         columnOfFour.forEach(square => currentColorArrangement[square] = blank)
+        setScoreDisplay((score) => score + 4)
         return true
       }
     }
@@ -86,11 +94,13 @@ const App = () => {
     for (let i = 0; i < width * width; i++) {
       const rowOfFour = [i, i + 1, i + 2, i + 3]
       const constantColor = currentColorArrangement[i]
+      const blankSquare = currentColorArrangement[i] === blank
       if ((i + 2) % width === 0 || (i + 1) % width === 0 || (i + 3) % width === 0) {
         continue
       } else {
-        if (rowOfFour.every(square => currentColorArrangement[square] === constantColor)) {
+        if (rowOfFour.every(square => currentColorArrangement[square] === constantColor && !blankSquare)) {
           rowOfFour.forEach(square => currentColorArrangement[square] = blank)
+          setScoreDisplay((score) => score + 4)
           return true
         }
       }
@@ -103,9 +113,11 @@ const App = () => {
     for (let i = 0; i < lastFourRows; i++) {
       const columnOfFive = [i, i + width, i + (width * 2), i + (width * 3), i + (width * 4)]
       const constantColor = currentColorArrangement[i]
+      const blankSquare = currentColorArrangement[i] === blank
 
-      if (columnOfFive.every(square => currentColorArrangement[square] === constantColor)) {
+      if (columnOfFive.every(square => currentColorArrangement[square] === constantColor && !blankSquare)) {
         columnOfFive.forEach(square => currentColorArrangement[square] = blank)
+        setScoreDisplay((score) => score + 5)
         return true
       }
     }
@@ -115,11 +127,13 @@ const App = () => {
     for (let i = 0; i < width * width; i++) {
       const rowOfFive = [i, i + 1, i + 2, i + 3, i + 4]
       const constantColor = currentColorArrangement[i]
+      const blankSquare = currentColorArrangement[i] === blank
       if ((i + 2) % width === 0 || (i + 1) % width === 0 || (i + 3) % width === 0 || (i + 4) % width === 0) {
         continue
       } else {
-        if (rowOfFive.every(square => currentColorArrangement[square] === constantColor)) {
+        if (rowOfFive.every(square => currentColorArrangement[square] === constantColor && !blankSquare)) {
           rowOfFive.forEach(square => currentColorArrangement[square] = blank)
+          setScoreDisplay((score) => score + 5)
           return true
         }
       }
@@ -157,7 +171,6 @@ const App = () => {
     setReplacedSquare(e.target)
   }
   const dragEnd = (e) => {
-    console.log("drag end")
     // Getting the index of the sqaures being moved
     const draggedSquareId = parseInt(draggedSquare.getAttribute('data-id'))
     const replacedSquareId = parseInt(replacedSquare.getAttribute('data-id'))
@@ -165,9 +178,6 @@ const App = () => {
     // Swapping the background colors
     currentColorArrangement[replacedSquareId] = draggedSquare.getAttribute('src')
     currentColorArrangement[draggedSquareId] = replacedSquare.getAttribute('src')
-
-    console.log("dragged square", draggedSquareId)
-    console.log("replaced square", replacedSquareId)
 
     const validMoves = [
       draggedSquareId - 1,
@@ -250,6 +260,9 @@ const App = () => {
             onDragEnd={dragEnd}
           />
         ))}
+      </div>
+      <div>
+        <ScoreBoard score={scoreDisplay} />
       </div>
     </div>
   );
