@@ -5,6 +5,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #FFC0CB;
 }
 
 code {
@@ -15,7 +16,11 @@ code {
 .app {
   display: flex;
     padding: 30px;
+  flex-direction: row;
+  justify-content: space-evenly;
 }
+
+
 
 .game {
   width: 560px;
@@ -27,4 +32,22 @@ code {
 .game img {
   width: 70px;
   height: 70px;
+}
+
+.score-board {
+  font-family: Tahoma;
+  display: flex;
+  flex-wrap: wrap;
+  background-color: #FFB6C1;
+  width: 300px;
+  height: 100px;
+  border-radius: 100%;
+  justify-content: center;
+  align-content: center;
+}
+
+.score {
+  font-family: Tahoma;
+  color: #C71585;
+  
 }
