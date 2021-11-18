@@ -1,17 +1,27 @@
 import { useState, useEffect } from 'react';
+import blueCandy from "./images/blue-candy.png"
+import greenCandy from "./images/green-candy.png"
+import orangeCandy from "./images/orange-candy.png"
+import purpleCandy from "./images/purple-candy.png"
+import redCandy from "./images/red-candy.png"
+import yellowCandy from "./images/yellow-candy.png"
+import blank from "./images/blank.png"
 
 const width = 8;
 const candyColors = [
-  'blue',
-  'green',
-  'orange',
-  'purple',
-  'red',
-  'yellow'
+  blueCandy,
+  greenCandy,
+  orangeCandy,
+  purpleCandy,
+  redCandy,
+  yellowCandy
 ];
+
 
 const App = () => {
   const [currentColorArrangement, setCurrentColorArrangement] = useState([]);
+  const [draggedSquare, setDraggedSquare] = useState(null)
+  const [replacedSquare, setReplacedSquare] = useState(null)
 
   const threeInColumnCheck = () => {
     /*
@@ -26,14 +36,15 @@ const App = () => {
       const constantColor = currentColorArrangement[i]
 
       if (columnOfThree.every(square => currentColorArrangement[square] === constantColor)) {
-        columnOfThree.forEach(square => currentColorArrangement[square] = '')
+        columnOfThree.forEach(square => currentColorArrangement[square] = blank)
+        return true
       }
     }
   }
 
   /*
   We are checking to see if we have three of the same color in each row. If we are comparing a square's color to the next to
-  it, we can skip the last two columns. This only works if the board is 8x8.
+  it, we can skip the last two columns. 
 
   Used basic modular arithmetic using this example 
   (https://stackoverflow.com/questions/46162545/skipping-numbers-in-a-for-loop-in-java-how-can-i-make-this-more-clean)
@@ -46,11 +57,12 @@ const App = () => {
     for (let i = 0; i < width * width; i++) {
       const rowOfThree = [i, i + 1, i + 2]
       const constantColor = currentColorArrangement[i]
-      if ((i + 2) % 8 === 0 || (i + 1) % 8 === 0) {
+      if ((i + 2) % width === 0 || (i + 1) % width === 0) {
         continue
       } else {
         if (rowOfThree.every(square => currentColorArrangement[square] === constantColor)) {
-          rowOfThree.forEach(square => currentColorArrangement[square] = '')
+          rowOfThree.forEach(square => currentColorArrangement[square] = blank)
+          return true
         }
       }
     }
@@ -64,7 +76,8 @@ const App = () => {
       const constantColor = currentColorArrangement[i]
 
       if (columnOfFour.every(square => currentColorArrangement[square] === constantColor)) {
-        columnOfFour.forEach(square => currentColorArrangement[square] = "")
+        columnOfFour.forEach(square => currentColorArrangement[square] = blank)
+        return true
       }
     }
   }
@@ -73,11 +86,12 @@ const App = () => {
     for (let i = 0; i < width * width; i++) {
       const rowOfFour = [i, i + 1, i + 2, i + 3]
       const constantColor = currentColorArrangement[i]
-      if ((i + 2) % 8 === 0 || (i + 1) % 8 === 0 || (i + 3) % 8 === 0) {
+      if ((i + 2) % width === 0 || (i + 1) % width === 0 || (i + 3) % width === 0) {
         continue
       } else {
         if (rowOfFour.every(square => currentColorArrangement[square] === constantColor)) {
-          rowOfFour.forEach(square => currentColorArrangement[square] = '')
+          rowOfFour.forEach(square => currentColorArrangement[square] = blank)
+          return true
         }
       }
     }
@@ -91,7 +105,8 @@ const App = () => {
       const constantColor = currentColorArrangement[i]
 
       if (columnOfFive.every(square => currentColorArrangement[square] === constantColor)) {
-        columnOfFive.forEach(square => currentColorArrangement[square] = "")
+        columnOfFive.forEach(square => currentColorArrangement[square] = blank)
+        return true
       }
     }
   }
@@ -100,14 +115,89 @@ const App = () => {
     for (let i = 0; i < width * width; i++) {
       const rowOfFive = [i, i + 1, i + 2, i + 3, i + 4]
       const constantColor = currentColorArrangement[i]
-      if ((i + 2) % 8 === 0 || (i + 1) % 8 === 0 || (i + 3) % 8 === 0 || (i + 4) % 8 === 0) {
+      if ((i + 2) % width === 0 || (i + 1) % width === 0 || (i + 3) % width === 0 || (i + 4) % width === 0) {
         continue
       } else {
         if (rowOfFive.every(square => currentColorArrangement[square] === constantColor)) {
-          rowOfFive.forEach(square => currentColorArrangement[square] = '')
+          rowOfFive.forEach(square => currentColorArrangement[square] = blank)
+          return true
         }
       }
     }
+  }
+
+  // This will move all of the blank sqaures to the top of the board
+  const moveIntoSquareBelow = () => {
+    // For all of the squares minus the last row based on the width, do the following
+    for (let i = 0; i < (width * width - width); i++) {
+      // Create an array with the index of the first row based on the width
+      const firstRowIndex = [...Array(width).keys()]
+      const firstRow = firstRowIndex.includes(i)
+
+      // If the first row has a blank square, chose a new color
+      if (firstRow && currentColorArrangement[i] === blank) {
+        let randomNumber = Math.floor(Math.random() * candyColors.length)
+        currentColorArrangement[i] = candyColors[randomNumber]
+      }
+
+      // if the square below the one we are currently looking at is blank
+      if (currentColorArrangement[i + width] === blank) {
+        // then move the current one down
+        currentColorArrangement[i + width] = currentColorArrangement[i]
+        // Set the current square to blank
+        currentColorArrangement[i] = blank
+      }
+    }
+  }
+
+  const dragStart = (e) => {
+    setDraggedSquare(e.target)
+  }
+  const dragDrop = (e) => {
+    setReplacedSquare(e.target)
+  }
+  const dragEnd = (e) => {
+    console.log("drag end")
+    // Getting the index of the sqaures being moved
+    const draggedSquareId = parseInt(draggedSquare.getAttribute('data-id'))
+    const replacedSquareId = parseInt(replacedSquare.getAttribute('data-id'))
+
+    // Swapping the background colors
+    currentColorArrangement[replacedSquareId] = draggedSquare.getAttribute('src')
+    currentColorArrangement[draggedSquareId] = replacedSquare.getAttribute('src')
+
+    console.log("dragged square", draggedSquareId)
+    console.log("replaced square", replacedSquareId)
+
+    const validMoves = [
+      draggedSquareId - 1,
+      draggedSquareId - width,
+      draggedSquareId + 1,
+      draggedSquareId + width
+    ]
+
+    const validMove = validMoves.includes(replacedSquareId)
+
+    const columnOfFive = fiveInColumnCheck()
+    const columnOfFour = fourInColumnCheck()
+    const columnOfThree = threeInColumnCheck()
+    const rowOfFive = fiveInRowCheck()
+    const rowOfFour = fourInRowCheck()
+    const rowOfThree = threeInRowCheck()
+
+    if (replacedSquareId && validMove && (columnOfFive || columnOfFour || columnOfThree || rowOfFive || rowOfFour || rowOfThree)) {
+      setDraggedSquare(null)
+      setReplacedSquare(null)
+    } else {
+      currentColorArrangement[replacedSquareId] = replacedSquare.getAttribute('src')
+      currentColorArrangement[draggedSquareId] = draggedSquare.getAttribute('src')
+      setCurrentColorArrangement([...currentColorArrangement])
+    }
+  }
+
+  const dragOverTest = (e) => {
+    e.preventDefault()
+    e.stopPropagation();
   }
 
   const createBoard = () => {
@@ -135,11 +225,12 @@ const App = () => {
       fiveInRowCheck()
       fourInRowCheck()
       threeInRowCheck()
+      moveIntoSquareBelow()
       setCurrentColorArrangement([...currentColorArrangement])
     }, 100)
     return () => clearInterval(timer)
 
-  }, [fiveInColumnCheck, fourInColumnCheck, threeInColumnCheck, fiveInRowCheck, fourInRowCheck, threeInRowCheck])
+  }, [fiveInColumnCheck, fiveInRowCheck, fourInColumnCheck, fourInRowCheck, threeInColumnCheck, threeInRowCheck, moveIntoSquareBelow, currentColorArrangement])
 
   return (
     <div className="app">
@@ -147,8 +238,16 @@ const App = () => {
         {currentColorArrangement.map((candyColor, index) => (
           <img
             key={index}
-            style={{ backgroundColor: candyColor }}
-            alt={candyColor + index}
+            src={candyColor}
+            alt={candyColor}
+            data-id={index}
+            draggable={true}
+            onDragStart={dragStart}
+            onDragOver={dragOverTest}
+            onDragEnter={(e) => e.preventDefault()}
+            onDragLeave={(e) => e.preventDefault()}
+            onDrop={dragDrop}
+            onDragEnd={dragEnd}
           />
         ))}
       </div>
